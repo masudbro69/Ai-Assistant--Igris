@@ -27,19 +27,29 @@ class SettingsActivity : AppCompatActivity() {
         ui.toggle("Notification summary", s.notificationSummary) { s.notificationSummary = it }
 
         ui.divider()
-        ui.text("MODEL ROUTER (spec §4)", dim = true)
-        val provider = ui.editText("Cloud provider: none / openai").also { it.setText(s.cloudProvider) }
-        val baseUrl = ui.editText("Base URL (https://api.openai.com/v1)").also { it.setText(s.cloudBaseUrl) }
-        val model = ui.editText("Model (gpt-4o-mini)").also { it.setText(s.cloudModel) }
-        val key = ui.editText("API key (stored locally only)").also { it.setText(s.cloudApiKey) }
+        ui.text("FREE AI — OpenCode Zen (spec §4)", dim = true)
+        ui.text("Zero-cost online intelligence: IGRIS rotates across free models (Big Pickle, MiniMax M2.5 Free, Nemotron 3 Super Free, MiMo V2 Pro/Flash Free, DeepSeek V4 Flash Free, GPT-5 Nano). Offline rule engine still works with no internet.", dim = true)
+        ui.toggle("Use free OpenCode Zen models when online", s.cloudProvider == "zen") {
+            s.cloudProvider = if (it) "zen" else "none"
+        }
+        val key = ui.editText("Zen API key (optional — free tier works without billing)").also { it.setText(s.cloudApiKey) }
+        val model = ui.editText("Preferred free model").also { it.setText(s.cloudModel) }
+        listOf("big-pickle", "minimax-m2.5-free", "nemotron-3-super-free", "mimo-v2-pro-free", "deepseek-v4-flash-free", "gpt-5-nano").forEach { m ->
+            ui.button(m) { model.setText(m) }
+        }
+
+        ui.divider()
+        ui.text("ADVANCED — custom endpoint", dim = true)
+        val provider = ui.editText("Provider: zen / openai / none").also { it.setText(s.cloudProvider) }
+        val baseUrl = ui.editText("Base URL (blank = Zen default)").also { it.setText(s.cloudBaseUrl) }
         val ollama = ui.editText("Ollama host").also { it.setText(s.ollamaHost) }
         ui.button("Save") {
             s.personalityName = name.text.toString().ifBlank { "IGRIS" }
             s.personalityStyle = style.text.toString().ifBlank { "Professional" }
             s.personalityLength = len.text.toString().ifBlank { "Short" }
-            s.cloudProvider = provider.text.toString().ifBlank { "none" }
+            s.cloudProvider = provider.text.toString().ifBlank { "zen" }
             s.cloudBaseUrl = baseUrl.text.toString()
-            s.cloudModel = model.text.toString()
+            s.cloudModel = model.text.toString().ifBlank { "big-pickle" }
             s.cloudApiKey = key.text.toString()
             s.ollamaHost = ollama.text.toString()
             finish()

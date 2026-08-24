@@ -23,6 +23,7 @@ class ModelRouter(
     private val ruleEngine = RuleEngineProvider()
     private val cloud = OpenAiCompatibleProvider(settings)
     private val ollama = OllamaProvider(settings)
+    private val zen = OpenCodeZenProvider(settings)
 
     /** Tool ids that never need a language model (Fast Intent Engine, spec §7). */
     val fastIntentTasks = setOf(
@@ -60,6 +61,7 @@ class ModelRouter(
         }
         return try {
             val provider = when {
+                zen.available() -> zen          // free models first — zero cost
                 cloud.available() -> cloud
                 ollama.available() -> ollama
                 else -> return ruleEngine.complete(prompt) to Route.RULE_ENGINE

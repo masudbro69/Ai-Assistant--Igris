@@ -46,7 +46,7 @@ class SettingsStore(context: Context) {
         set(v) = prefs.edit().putString("p_len", v).apply()
 
     var cloudProvider: String
-        get() = prefs.getString("cloud_provider", "none") ?: "none"
+        get() = prefs.getString("cloud_provider", "zen") ?: "zen"
         set(v) = prefs.edit().putString("cloud_provider", v).apply()
 
     var cloudBaseUrl: String
@@ -54,7 +54,7 @@ class SettingsStore(context: Context) {
         set(v) = prefs.edit().putString("cloud_url", v).apply()
 
     var cloudModel: String
-        get() = prefs.getString("cloud_model", "") ?: ""
+        get() = prefs.getString("cloud_model", "big-pickle") ?: "big-pickle"
         set(v) = prefs.edit().putString("cloud_model", v).apply()
 
     var cloudApiKey: String

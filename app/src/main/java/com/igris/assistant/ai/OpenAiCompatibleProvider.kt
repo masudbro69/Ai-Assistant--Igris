@@ -59,3 +59,59 @@ class OllamaProvider(private val settings: SettingsStore) : AiProvider {
         return AiReply(text = res.optString("response", ""), model = "ollama", online = true)
     }
 }
+
+/**
+ * OpenCode Zen — free, OpenAI-compatible models (no paid API keys needed).
+ * Endpoint: https://opencode.ai/zen/v1/chat/completions (Bearer key optional).
+ * Rotates across free models so a quota/endpoint failure never blocks the answer.
+ */
+class OpenCodeZenProvider(private val settings: SettingsStore) : AiProvider {
+    override val id = "opencode-zen"
+    override val label = "OpenCode Zen (free models)"
+    override val online = true
+
+    override fun available(): Boolean = settings.cloudProvider == "zen"
+
+    override suspend fun complete(prompt: AiPrompt): AiReply {
+        val base = settings.cloudBaseUrl.ifBlank { DEFAULT_BASE }.trimEnd('/')
+        val key = settings.cloudApiKey
+        val preferred = settings.cloudModel.ifBlank { FREE_MODELS.first() }
+        val order = listOf(preferred) + FREE_MODELS.filter { it != preferred }
+        var lastError: Exception? = null
+        for (model in order) {
+            try {
+                val body = org.json.JSONObject().apply {
+                    put("model", model)
+                    put("max_tokens", prompt.maxTokens)
+                    put("messages", org.json.JSONArray().apply {
+                        put(org.json.JSONObject().apply { put("role", "system"); put("content", prompt.system) })
+                        put(org.json.JSONObject().apply { put("role", "user"); put("content", prompt.user) })
+                    })
+                }
+                val headers = if (key.isBlank()) emptyMap() else mapOf("Authorization" to "Bearer $key")
+                val res = HttpJson.post("$base/chat/completions", headers, body)
+                val text = res.optJSONArray("choices")?.optJSONObject(0)
+                    ?.optJSONObject("message")?.optString("content") ?: ""
+                if (text.isNotBlank()) return AiReply(text, "zen/$model", online = true)
+            } catch (e: Exception) {
+                lastError = e
+            }
+        }
+        throw lastError ?: IllegalStateException("OpenCode Zen: no free model responded")
+    }
+
+    companion object {
+        const val DEFAULT_BASE = "https://opencode.ai/zen/v1"
+        /** Free-tier models; rotated automatically (spec: cost-free intelligence). */
+        val FREE_MODELS = listOf(
+            "big-pickle",
+            "minimax-m2.5-free",
+            "nemotron-3-super-free",
+            "mimo-v2-pro-free",
+            "mimo-v2-flash-free",
+            "deepseek-v4-flash-free",
+            "gpt-5-nano",
+            "glm-4.7-free",
+        )
+    }
+}

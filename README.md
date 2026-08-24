@@ -30,7 +30,7 @@ Requires JDK 17 and the Android SDK (compileSdk 35). CI builds automatically on 
 
 - **AI Brain pipeline** (classify → route → permission → execute → verify) in `brain/IgrisBrain.kt`
 - **Fast Intent Engine** — flashlight, volume, timers, alarms, reminders, notes, calculator, app launch, device info with *no* LLM
-- **Multi-model router** — offline rule engine always; optional OpenAI-compatible cloud or Ollama (LAN/local)
+- **Multi-model router** — offline rule engine always; **free OpenCode Zen models by default** (Big Pickle, MiniMax M2.5 Free, Nemotron 3 Super Free, MiMo V2 Pro/Flash Free, DeepSeek V4 Flash Free, GPT-5 Nano) with auto-rotation; optional custom OpenAI-compatible endpoint or Ollama (LAN/local)
 - **Offline Fortress / Privacy ledger / one-tap wipe**
 - **Personal Memory** with categories, forget/search/export
 - **Knowledge Vault + offline Local RAG** (TF-IDF) — answer from your own documents with zero internet

@@ -7,7 +7,7 @@ Legend: ✅ implemented in v1 · 🟡 partial · 🔭 roadmap (see ROADMAP.md)
 | 1 | Product identity | ✅ | README, resources |
 | 2 | Unified multi-capability system | ✅ | whole app |
 | 3 | AI Brain (reason/memory/plan/tool-select/permission/execute) | ✅ | `brain/IgrisBrain.kt` |
-| 4 | Multi-model router (chat/code/vision/…; offline/hybrid) | ✅ | `ai/ModelRouter.kt` |
+| 4 | Multi-model router (chat/code/vision/…; offline/hybrid) | ✅ | `ai/ModelRouter.kt` + `ai/OpenCodeZenProvider` (free models, zero cost) |
 | 5 | Smart offline mode (works with no internet) | ✅ | rule engine + tools all offline |
 | 6 | Adaptive model by RAM/battery/thermal/CPU | ✅ | `core/DeviceInspector.kt` |
 | 7 | AI power saving (fast intent vs planner) | ✅ | `ModelRouter.fastIntentTasks` |
