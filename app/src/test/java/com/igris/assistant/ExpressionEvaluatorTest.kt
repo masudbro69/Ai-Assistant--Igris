@@ -17,7 +17,8 @@ class ExpressionEvaluatorTest {
 
     @Test fun functions() {
         assertEquals(4.0, ExpressionEvaluator().evaluate("sqrt(16)"), 1e-9)
-        assertEquals(90.0, ExpressionEvaluator().evaluate("sin(90)"), 1e-9)
+        assertEquals(1.0, ExpressionEvaluator().evaluate("sin(90)"), 1e-9)
+        assertEquals(0.0, ExpressionEvaluator().evaluate("sin(0)"), 1e-9)
         assertEquals(2.0, ExpressionEvaluator().evaluate("log(100)"), 1e-9)
     }
 
