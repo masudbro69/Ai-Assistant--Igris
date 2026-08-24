@@ -2,6 +2,7 @@ package com.igris.assistant
 
 import com.igris.assistant.util.ExpressionEvaluator
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -21,9 +22,11 @@ class ExpressionEvaluatorTest {
     }
 
     @Test fun extract() {
-        val e = ExpressionEvaluator.extract("what is 12 plus 8?")!!.replace("plus", "+")
-        assertTrue(e.contains("12"))
-        val v = ExpressionEvaluator().evaluate(ExpressionEvaluator.extract("calculate 6*7")!!)
-        assertEquals(42.0, v, 1e-9)
+        val e1 = ExpressionEvaluator.extract("what is 12 plus 8")
+        assertTrue("expected expr, got $e1", e1 != null)
+        assertEquals(20.0, ExpressionEvaluator().evaluate(e1!!), 1e-9)
+        val e2 = ExpressionEvaluator.extract("calculate 6*7")
+        assertEquals(42.0, ExpressionEvaluator().evaluate(e2!!), 1e-9)
+        assertNull(ExpressionEvaluator.extract("set a 5 minute timer"))
     }
 }

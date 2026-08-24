@@ -94,13 +94,19 @@ class ExpressionEvaluator {
             val cleaned = raw.lowercase()
                 .replace("what is", "").replace("calculate", "").replace("compute", "")
                 .replace("solve", "").replace("hisab", "").replace("koro", "")
-                .replace("=", " ").replace("plus", "+").replace("minus", "-")
-                .replace("times", "*").replace("into", "*").replace("divided by", "/")
-                .replace("multiply", "*").replace("to the power", "^").replace("power", "^")
-            val m = Regex("[0-9()+\\-*/%.^\\s]+").findAll(cleaned)
-                .mapNotNull { r -> r.value.trim().takeIf { it.length >= 3 && it.any { c -> c.isDigit() } } }
+                .replace("plus", "+").replace("minus", "-").replace("times", "*")
+                .replace("multiplied by", "*").replace("multiply", "*")
+                .replace("divided by", "/").replace("over", "/")
+                .replace("to the power", "^").replace("power", "^")
+                .replace("=", " ")
+            return Regex("[0-9()+\\-*/%.^\\s]+").findAll(cleaned)
+                .mapNotNull { r ->
+                    val v = r.value.trim()
+                    v.takeIf {
+                        it.length >= 3 && it.any { c -> c.isDigit() } && it.any { c -> "+-*/%^".contains(c) }
+                    }
+                }
                 .maxByOrNull { it.length }
-            return m
         }
     }
 }
