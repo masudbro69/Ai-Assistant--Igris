@@ -7,7 +7,6 @@ import android.provider.MediaStore
 import androidx.appcompat.app.AppCompatActivity
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
-import com.google.mlkit.vision.text.bengali.BengaliTextRecognizerOptions
 import com.google.mlkit.vision.text.latin.TextRecognitionOptions
 import com.igris.assistant.IgrisApp
 import com.igris.assistant.knowledge.KnowledgeVault
@@ -72,21 +71,14 @@ class VaultActivity : AppCompatActivity() {
     private fun scan(bmp: Bitmap) {
         val image = InputImage.fromBitmap(bmp, 0)
         val latin = TextRecognition.getClient(TextRecognitionOptions.DEFAULT_OPTIONS)
-        val bengali = TextRecognition.getClient(BengaliTextRecognizerOptions.Builder().build())
-        val sb = StringBuilder()
-        var done = 0
-        fun one() {
-            done++
-            if (done < 2) return
-            val text = sb.toString().trim()
-            if (text.isBlank()) { ui.text("No readable text found in the photo.", dim = true); return }
-            val n = "scan_${System.currentTimeMillis()}.txt"
-            vault.add(n, text)
-            recreate()
-        }
-        latin.process(image).addOnSuccessListener { sb.append(it.text).append("\n"); one() }
-            .addOnFailureListener { one() }
-        bengali.process(image).addOnSuccessListener { sb.append(it.text).append("\n"); one() }
-            .addOnFailureListener { one() }
+        latin.process(image)
+            .addOnSuccessListener { r ->
+                val text = r.text.trim()
+                if (text.isBlank()) { ui.text("No readable text found in the photo.", dim = true); return@addOnSuccessListener }
+                val n = "scan_${System.currentTimeMillis()}.txt"
+                vault.add(n, text)
+                recreate()
+            }
+            .addOnFailureListener { ui.text("OCR failed on this device.", dim = true) }
     }
 }
