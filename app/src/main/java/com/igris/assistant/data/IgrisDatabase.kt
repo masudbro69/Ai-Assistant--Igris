@@ -58,6 +58,14 @@ class IgrisDatabase(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME,
             )"""
         )
         db.execSQL(
+            """CREATE TABLE conversations (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                role TEXT NOT NULL,
+                text TEXT NOT NULL,
+                at_time TEXT NOT NULL
+            )"""
+        )
+        db.execSQL(
             """CREATE TABLE history (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 at_time TEXT NOT NULL,
@@ -68,11 +76,20 @@ class IgrisDatabase(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME,
     }
 
     override fun onUpgrade(db: SQLiteDatabase, old: Int, new: Int) {
-        // v1 schema; future migrations go here.
+        if (old < 2) {
+            db.execSQL(
+                """CREATE TABLE IF NOT EXISTS conversations (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    role TEXT NOT NULL,
+                    text TEXT NOT NULL,
+                    at_time TEXT NOT NULL
+                )"""
+            )
+        }
     }
 
     companion object {
         const val DATABASE_NAME = "igris.db"
-        const val VERSION = 1
+        const val VERSION = 2
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import com.igris.assistant.ai.ModelRouter
 import com.igris.assistant.core.DeviceInspector
 import com.igris.assistant.data.CommandHistoryStore
+import com.igris.assistant.data.ConversationStore
 import com.igris.assistant.data.NoteStore
 import com.igris.assistant.data.ProjectStore
 import com.igris.assistant.data.ReminderStore
@@ -28,6 +29,7 @@ class ServiceLocator(appContext: Context) {
     val routines = RoutineStore(appContext)
     val projects = ProjectStore(appContext)
     val history = CommandHistoryStore(appContext)
+    val conversations = ConversationStore(appContext)
     val vault = KnowledgeVault(appContext)
     val router = ModelRouter(appContext, settings, ledger)
 }

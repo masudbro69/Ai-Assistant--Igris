@@ -192,13 +192,17 @@ class OverlayActivity : AppCompatActivity() {
         }
         status.text = "Thinking…"
         reply.text = "“$t”"
+        (application as IgrisApp).locator.conversations.log("user", t)
         lifecycleScope.launch {
             val res = brain.handle(t)
             reply.text = res.reply
-            status.text = "Done — tap mic for next command"
+            (application as IgrisApp).locator.conversations.log("igris", res.reply)
+            status.text = "Listening again… (continuous conversation)"
             if ((application as IgrisApp).locator.settings.speakResponses) {
                 val iso = if (res.speak.orEmpty().any { it.code in 0x0980..0x09FF }) "bn-BD" else "en-US"
-                voice.speak(res.speak ?: res.reply, iso)
+                voice.speak(res.speak ?: res.reply, iso) { startListening() }
+            } else {
+                startListening()
             }
         }
     }

@@ -19,11 +19,20 @@ class VoiceEngine(private val context: Context) {
     private var tts: TextToSpeech? = null
     private var ttsReady = false
     private var deepVoice: android.speech.tts.Voice? = null
+    private var onSpeakDone: (() -> Unit)? = null
 
     fun initTts(onReady: (Boolean) -> Unit = {}) {
         tts = TextToSpeech(context) { status ->
             ttsReady = status == TextToSpeech.SUCCESS
-            if (ttsReady) configureDeepVoice()
+            if (ttsReady) {
+                configureDeepVoice()
+                tts?.setOnUtteranceProgressListener(object : android.speech.tts.UtteranceProgressListener() {
+                    override fun onStart(id: String?) {}
+                    override fun onDone(id: String?) { fireDone(id) }
+                    @Deprecated("Deprecated in Java")
+                    override fun onError(id: String?) { fireDone(id) }
+                })
+            }
             onReady(ttsReady)
         }
     }
@@ -86,13 +95,21 @@ class VoiceEngine(private val context: Context) {
         recognizer = null
     }
 
-    fun speak(text: String, langIso: String = "en-US") {
+    private fun fireDone(id: String?) {
+        if (id != "igris") return
+        val cb = onSpeakDone
+        onSpeakDone = null
+        cb?.let { android.os.Handler(android.os.Looper.getMainLooper()).post(it) }
+    }
+
+    fun speak(text: String, langIso: String = "en-US", onDone: (() -> Unit)? = null) {
         if (!ttsReady) return
         val t = tts ?: return
         t.language = Locale.forLanguageTag(langIso) ?: Locale.US
         deepVoice?.let { v -> if (v.locale.language == (Locale.forLanguageTag(langIso)?.language ?: "en")) runCatching { t.setVoice(v) } }
         t.setPitch(0.68f)
         t.setSpeechRate(0.92f)
+        onSpeakDone = onDone
         t.speak(cleanForTts(text), TextToSpeech.QUEUE_FLUSH, null, "igris")
     }
 

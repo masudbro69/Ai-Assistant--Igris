@@ -105,6 +105,27 @@ class ProjectStore(context: Context) {
         db.update("project_tasks", ContentValues().apply { put("done", if (done) 1 else 0) }, "id=?", arrayOf(id.toString()))
 }
 
+class ConversationStore(context: Context) {
+    private val db = IgrisDatabase(context.applicationContext).writableDatabase
+    fun log(role: String, text: String) {
+        val at = java.text.SimpleDateFormat("MM-dd HH:mm", java.util.Locale.US).format(java.util.Date())
+        db.insert("conversations", null, ContentValues().apply {
+            put("role", role); put("text", text.take(2000)); put("at_time", at)
+        })
+        db.execSQL("DELETE FROM conversations WHERE id NOT IN (SELECT id FROM conversations ORDER BY id DESC LIMIT 1000)")
+    }
+    fun recent(limit: Int = 60): List<HistoryEntry> {
+        val out = mutableListOf<HistoryEntry>()
+        db.query("conversations", null, null, null, null, null, "id DESC", limit.toString()).use { c ->
+            while (c.moveToNext()) out += HistoryEntry(c.getLong(0), c.getString(3), c.getString(1), c.getString(2))
+        }
+        return out
+    }
+    fun search(q: String, limit: Int = 5): List<HistoryEntry> =
+        recent(200).filter { it.summary.lowercase().contains(q.lowercase()) }.take(limit)
+    fun clear() = db.delete("conversations", null, null)
+}
+
 class CommandHistoryStore(context: Context) {
     private val db = IgrisDatabase(context.applicationContext).writableDatabase
     fun log(kind: String, summary: String) {

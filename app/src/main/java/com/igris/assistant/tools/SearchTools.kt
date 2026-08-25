@@ -125,10 +125,12 @@ class SmartSearchTool : Tool {
         val notes = ctx.loc.notes.search(q).take(3)
         val hist = ctx.loc.history.recent(50).filter { it.summary.lowercase().contains(q.lowercase()) }.take(3)
         val vault = ctx.loc.vault.index.search(q, 3)
+        val conv = ctx.loc.conversations.search(q, 3)
         if (mem.isNotEmpty()) out.append("Memory:\n").append(mem.joinToString("\n") { "  • ${it.title}" }).append("\n")
         if (notes.isNotEmpty()) out.append("Notes:\n").append(notes.joinToString("\n") { "  • ${it.title}" }).append("\n")
         if (hist.isNotEmpty()) out.append("History:\n").append(hist.joinToString("\n") { "  • ${it.at} ${it.summary}" }).append("\n")
         if (vault.isNotEmpty()) out.append("Vault:\n").append(vault.joinToString("\n") { "  • ${it.first}" }).append("\n")
+        if (conv.isNotEmpty()) out.append("Conversations:\n").append(conv.joinToString("\n") { "  • [${it.kind}] ${it.summary.take(80)}" }).append("\n")
         return if (out.isEmpty()) ToolResult(true, "Nothing found for “$q”.") else ToolResult(true, out.toString().trim())
     }
 }

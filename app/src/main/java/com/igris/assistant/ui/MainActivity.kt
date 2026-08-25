@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var loc: com.igris.assistant.ServiceLocator
     private lateinit var brain: IgrisBrain
     private lateinit var voice: VoiceEngine
     private val adapter = MessageAdapter()
@@ -38,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val loc = (application as IgrisApp).locator
+        loc = (application as IgrisApp).locator
         brain = IgrisBrain(loc)
         voice = VoiceEngine(this).also { it.initTts() }
 
@@ -67,6 +68,19 @@ class MainActivity : AppCompatActivity() {
         if (loc.settings.wakeWordEnabled) {
             com.igris.assistant.services.WakeControl.start(this)
         }
+        if (loc.settings.dailyBriefing) {
+            com.igris.assistant.services.BriefingScheduler.scheduleDaily(this, 8)
+        }
+        handleShareIntent()
+    }
+
+    private fun handleShareIntent() {
+        val text = when (intent?.action) {
+            Intent.ACTION_SEND -> intent.getStringExtra(Intent.EXTRA_TEXT)
+            Intent.ACTION_PROCESS_TEXT -> intent.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT)?.toString()
+            else -> null
+        }
+        if (!text.isNullOrBlank()) submit(text)
     }
 
     private fun buildNavRow() {
@@ -163,8 +177,14 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private fun addUser(t: String) = adapter.add(ChatMessage(Role.USER, t))
-    private fun addBot(t: String, meta: String = "") = adapter.add(ChatMessage(Role.BOT, t, meta))
+    private fun addUser(t: String) {
+        adapter.add(ChatMessage(Role.USER, t))
+        loc.conversations.log("user", t)
+    }
+    private fun addBot(t: String, meta: String = "") {
+        adapter.add(ChatMessage(Role.BOT, t, meta))
+        loc.conversations.log("igris", t)
+    }
 
     private fun showConfirm() {
         binding.confirmBar.visibility = android.view.View.VISIBLE
