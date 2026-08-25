@@ -72,6 +72,17 @@ class MainActivity : AppCompatActivity() {
             com.igris.assistant.services.BriefingScheduler.scheduleDaily(this, 8)
         }
         handleShareIntent()
+        startKenBurns()
+    }
+
+    /** Slow cinematic zoom on the IGRIS hero art. */
+    private fun startKenBurns() {
+        val v = binding.heroArt
+        fun loop(forward: Boolean) {
+            val target = if (forward) 1.1f else 1.0f
+            v.animate().scaleX(target).scaleY(target).setDuration(7000).withEndAction { loop(!forward) }.start()
+        }
+        loop(true)
     }
 
     private fun handleShareIntent() {

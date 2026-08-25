@@ -31,6 +31,7 @@ object TaskClassifier {
             isCalc(t) -> TaskClass.CALCULATION
             has("flash", "torch", "batir", "বাতি") -> TaskClass.DEVICE_CONTROL
             has("volume", "shobdo", "আওয়াজ", "mute") -> TaskClass.DEVICE_CONTROL
+            has("wifi", "bluetooth", "brightness", "wallpaper", "close ", "kill ", "wallpepar") -> TaskClass.DEVICE_CONTROL
             has("open ", "launch ", "chalu koro", "খোলো") -> TaskClass.DEVICE_CONTROL
             has("battery", "storage", "ram", "device info", "diagnostics") -> TaskClass.SYSTEM_INFO
             has("timer", "countdown") -> TaskClass.TIMER

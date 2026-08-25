@@ -26,12 +26,13 @@ Requires JDK 17 and the Android SDK (compileSdk 35). CI builds automatically on 
 ./gradlew testDebugUnitTest assembleDebug assembleRelease
 ```
 
-## v1.3 — conversation, memory of chats, share, camera OCR
+## v1.3 — conversation, history, share, device control, IGRIS art UI
 - **Continuous conversation**: the popup keeps listening after each answer (say “stop” to interrupt).
 - **Chat history saved + searchable** (Smart Search & History screen).
 - **Share-to-IGRIS**: select text in any app → Share → IGRIS (summarize/translate/remember).
 - **Auto daily briefing** at 8 AM (notification), configurable toggle.
-- **Camera OCR (Bangla + English)** in Vault: scan a document/photo → text → Knowledge Vault.
+- **Full device control**: Wi-Fi, Bluetooth, brightness, wallpaper (IGRIS art), close apps, flashlight, volume — with all required permissions declared.
+- **Cinematic UI**: Solo-Leveling-style IGRIS hero art with slow Ken-Burns zoom, pulsing aura popup.
 
 ## Wake word & popup (v1.2)
 Say **“IGRIS”** anywhere — a cinematic popup appears (shadow-knight emblem with pulsing cyan aura), listens to your command, executes it and answers in a **deep, realistic male voice** (low pitch, calm pace). No app login, no typing. Enable via Settings → *Wake word “IGRIS”* (grants overlay + mic).
