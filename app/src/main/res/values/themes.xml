@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Igris" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/igris_primary</item>
+        <item name="colorOnPrimary">@color/igris_bg</item>
+        <item name="colorPrimaryContainer">@color/igris_primary_dark</item>
+        <item name="colorSecondary">@color/igris_accent</item>
+        <item name="android:colorBackground">@color/igris_bg</item>
+        <item name="colorSurface">@color/igris_surface</item>
+        <item name="colorOnSurface">@color/igris_text</item>
+        <item name="android:statusBarColor">@color/igris_bg</item>
+        <item name="android:navigationBarColor">@color/igris_bg</item>
+        <item name="android:windowBackground">@color/igris_bg</item>
+    </style>
+
+    <style name="Theme.Igris.Overlay" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.65</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+</resources>

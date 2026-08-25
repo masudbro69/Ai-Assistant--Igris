@@ -1,0 +1,117 @@
+package com.igris.assistant.ai
+
+import com.igris.assistant.core.AiPrompt
+import com.igris.assistant.core.AiReply
+import com.igris.assistant.data.SettingsStore
+import org.json.JSONArray
+import org.json.JSONObject
+
+/** Any OpenAI-compatible endpoint (OpenAI, Groq, OpenRouter, LM Studio…). */
+class OpenAiCompatibleProvider(private val settings: SettingsStore) : AiProvider {
+    override val id = "openai-compatible"
+    override val label = "Cloud (OpenAI-compatible)"
+    override val online = true
+
+    override fun available(): Boolean {
+        val s = settings
+        return s.cloudProvider == "openai" && s.cloudBaseUrl.isNotBlank() && s.cloudApiKey.isNotBlank()
+    }
+
+    override suspend fun complete(prompt: AiPrompt): AiReply {
+        val body = JSONObject().apply {
+            put("model", settings.cloudModel.ifBlank { "gpt-4o-mini" })
+            put("max_tokens", prompt.maxTokens)
+            put("messages", JSONArray().apply {
+                put(JSONObject().apply { put("role", "system"); put("content", prompt.system) })
+                put(JSONObject().apply { put("role", "user"); put("content", prompt.user) })
+            })
+        }
+        val headers = mapOf("Authorization" to "Bearer ${settings.cloudApiKey}")
+        val res = HttpJson.post("${settings.cloudBaseUrl.trimEnd('/')}/chat/completions", headers, body)
+        val text = res.optJSONArray("choices")?.optJSONObject(0)
+            ?.optJSONObject("message")?.optString("content") ?: ""
+        val usage = res.optJSONObject("usage")
+        return AiReply(
+            text = text,
+            model = res.optString("model", settings.cloudModel),
+            online = true,
+            tokensIn = usage?.optInt("prompt_tokens", 0) ?: 0,
+            tokensOut = usage?.optInt("completion_tokens", 0) ?: 0,
+        )
+    }
+}
+
+/** Ollama on the device's host (e.g. adb reverse tcp:11343) or LAN. */
+class OllamaProvider(private val settings: SettingsStore) : AiProvider {
+    override val id = "ollama"
+    override val label = "Local/LAN Ollama"
+    override val online = true // requires a reachable host, but no public cloud
+
+    override fun available(): Boolean = settings.ollamaHost.isNotBlank()
+
+    override suspend fun complete(prompt: AiPrompt): AiReply {
+        val body = JSONObject().apply {
+            put("model", "llama3")
+            put("stream", false)
+            put("prompt", "${prompt.system}\n\nUser: ${prompt.user}\nAssistant:")
+        }
+        val res = HttpJson.post("${settings.ollamaHost.trimEnd('/')}/api/generate", emptyMap(), body)
+        return AiReply(text = res.optString("response", ""), model = "ollama", online = true)
+    }
+}
+
+/**
+ * OpenCode Zen — free, OpenAI-compatible models (no paid API keys needed).
+ * Endpoint: https://opencode.ai/zen/v1/chat/completions (Bearer key optional).
+ * Rotates across free models so a quota/endpoint failure never blocks the answer.
+ */
+class OpenCodeZenProvider(private val settings: SettingsStore) : AiProvider {
+    override val id = "opencode-zen"
+    override val label = "OpenCode Zen (free models)"
+    override val online = true
+
+    override fun available(): Boolean = settings.cloudProvider == "zen"
+
+    override suspend fun complete(prompt: AiPrompt): AiReply {
+        val base = settings.cloudBaseUrl.ifBlank { DEFAULT_BASE }.trimEnd('/')
+        val key = settings.cloudApiKey
+        val preferred = settings.cloudModel.ifBlank { FREE_MODELS.first() }
+        val order = listOf(preferred) + FREE_MODELS.filter { it != preferred }
+        var lastError: Exception? = null
+        for (model in order) {
+            try {
+                val body = org.json.JSONObject().apply {
+                    put("model", model)
+                    put("max_tokens", prompt.maxTokens)
+                    put("messages", org.json.JSONArray().apply {
+                        put(org.json.JSONObject().apply { put("role", "system"); put("content", prompt.system) })
+                        put(org.json.JSONObject().apply { put("role", "user"); put("content", prompt.user) })
+                    })
+                }
+                val headers = if (key.isBlank()) emptyMap() else mapOf("Authorization" to "Bearer $key")
+                val res = HttpJson.post("$base/chat/completions", headers, body)
+                val text = res.optJSONArray("choices")?.optJSONObject(0)
+                    ?.optJSONObject("message")?.optString("content") ?: ""
+                if (text.isNotBlank()) return AiReply(text, "zen/$model", online = true)
+            } catch (e: Exception) {
+                lastError = e
+            }
+        }
+        throw lastError ?: IllegalStateException("OpenCode Zen: no free model responded")
+    }
+
+    companion object {
+        const val DEFAULT_BASE = "https://opencode.ai/zen/v1"
+        /** Free-tier models; rotated automatically (spec: cost-free intelligence). */
+        val FREE_MODELS = listOf(
+            "big-pickle",
+            "minimax-m2.5-free",
+            "nemotron-3-super-free",
+            "mimo-v2-pro-free",
+            "mimo-v2-flash-free",
+            "deepseek-v4-flash-free",
+            "gpt-5-nano",
+            "glm-4.7-free",
+        )
+    }
+}

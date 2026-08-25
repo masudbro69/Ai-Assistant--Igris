@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">IGRIS</string>
+    <string name="app_tagline">Your Device. Your Intelligence. Your IGRIS.</string>
+
+    <string name="title_settings">IGRIS Settings</string>
+    <string name="title_privacy">Privacy Dashboard</string>
+    <string name="title_diagnostics">Self Diagnostics</string>
+    <string name="title_vault">Knowledge Vault</string>
+    <string name="title_history">Command History</string>
+    <string name="title_routines">Routines</string>
+    <string name="title_plugins">Plugin Registry</string>
+    <string name="title_projects">Projects</string>
+
+    <string name="hint_input">Ask IGRIS anything… (Bangla / English)</string>
+    <string name="action_send">Send</string>
+    <string name="action_voice">Voice</string>
+    <string name="action_stop">Stop</string>
+    <string name="action_confirm">Confirm</string>
+    <string name="action_cancel">Cancel</string>
+
+    <string name="mode_ask">Ask</string>
+    <string name="mode_assistant">Assistant</string>
+    <string name="mode_agent">Agent</string>
+    <string name="mode_automation">Automation</string>
+    <string name="mode_private">Private</string>
+    <string name="mode_offline">Offline</string>
+
+    <string name="notif_channel_actions">IGRIS actions</string>
+    <string name="notif_channel_briefing">Daily briefing</string>
+
+    <string name="perm_rationale_audio">IGRIS needs microphone access for voice control. Voice is processed on the device.</string>
+    <string name="perm_rationale_notifications">IGRIS can post reminders, timers and the daily briefing.</string>
+    <string name="welcome">IGRIS online. Offline-first personal AI operating agent.\n\nSay “Good morning IGRIS” for a briefing, or try:\n• “Flashlight on”\n• “15 minute timer”\n• “Remember my perfume price is 1200 taka”\n• “What is in my perfume pricing note?”\n• “Plan a YouTube channel for me”</string>
+</resources>

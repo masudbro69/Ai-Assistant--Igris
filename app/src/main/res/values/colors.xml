@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="igris_bg">#FF070B14</color>
+    <color name="igris_surface">#FF0E1524</color>
+    <color name="igris_surface_alt">#FF152036</color>
+    <color name="igris_primary">#FF39D3F5</color>
+    <color name="igris_primary_dark">#FF0E7C99</color>
+    <color name="igris_accent">#FF8B5CF6</color>
+    <color name="igris_text">#FFE8F1FF</color>
+    <color name="igris_text_dim">#FF93A4C3</color>
+    <color name="igris_user_bubble">#FF1B2A47</color>
+    <color name="igris_bot_bubble">#FF101A2C</color>
+    <color name="igris_ok">#FF34D399</color>
+    <color name="igris_warn">#FFFBBF24</color>
+    <color name="igris_danger">#FFF87171</color>
+    <color name="ic_launcher_background">#FF070B14</color>
+</resources>
