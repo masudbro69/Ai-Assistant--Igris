@@ -26,6 +26,9 @@ Requires JDK 17 and the Android SDK (compileSdk 35). CI builds automatically on 
 ./gradlew testDebugUnitTest assembleDebug assembleRelease
 ```
 
+## Wake word & popup (v1.2)
+Say **“IGRIS”** anywhere — a cinematic popup appears (shadow-knight emblem with pulsing cyan aura), listens to your command, executes it and answers in a **deep, realistic male voice** (low pitch, calm pace). No app login, no typing. Enable via Settings → *Wake word “IGRIS”* (grants overlay + mic).
+
 ## What's implemented now (v1)
 
 - **AI Brain pipeline** (classify → route → permission → execute → verify) in `brain/IgrisBrain.kt`

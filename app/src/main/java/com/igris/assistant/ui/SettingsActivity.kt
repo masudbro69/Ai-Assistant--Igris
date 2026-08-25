@@ -22,9 +22,16 @@ class SettingsActivity : AppCompatActivity() {
         ui.toggle("Offline Fortress (block all online AI)", s.offlineFortress) { s.offlineFortress = it }
         ui.toggle("Proactive suggestions", s.proactiveSuggestions) { s.proactiveSuggestions = it }
         ui.toggle("Voice input", s.voiceEnabled) { s.voiceEnabled = it }
+        ui.toggle("Wake word “IGRIS” — say IGRIS, get the popup anywhere", s.wakeWordEnabled) {
+            s.wakeWordEnabled = it
+            if (it) com.igris.assistant.services.WakeControl.start(this)
+            else com.igris.assistant.services.WakeControl.stop(this)
+        }
         ui.toggle("Speak responses", s.speakResponses) { s.speakResponses = it }
         ui.toggle("Daily morning briefing", s.dailyBriefing) { s.dailyBriefing = it }
         ui.toggle("Notification summary", s.notificationSummary) { s.notificationSummary = it }
+
+        ui.text("Voice style: deep male, low pitch, calm pace (realistic, not robotic).", dim = true)
 
         ui.divider()
         ui.text("FREE AI — OpenCode Zen (spec §4)", dim = true)

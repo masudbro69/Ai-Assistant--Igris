@@ -65,6 +65,11 @@ class SettingsStore(context: Context) {
         get() = prefs.getString("ollama_host", "http://10.0.2.2:11343") ?: "http://10.0.2.2:11343"
         set(v) = prefs.edit().putString("ollama_host", v).apply()
 
+    /** Background wake-word listener ("IGRIS" popup). */
+    var wakeWordEnabled: Boolean
+        get() = prefs.getBoolean("wake_word", true)
+        set(v) = prefs.edit().putBoolean("wake_word", v).apply()
+
     var dailyBriefing: Boolean
         get() = prefs.getBoolean("briefing", true)
         set(v) = prefs.edit().putBoolean("briefing", v).apply()

@@ -63,6 +63,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         requestBasePermissions()
+
+        if (loc.settings.wakeWordEnabled) {
+            com.igris.assistant.services.WakeControl.start(this)
+        }
     }
 
     private fun buildNavRow() {
